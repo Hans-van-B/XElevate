@@ -19,7 +19,7 @@
         End Try
 
         xtrace(AppName, 2)
-        xtrace(" - Version    = " & AppVersion, 2)
+        xtrace(" - Version    = " & AppVer, 2)
         xtrace(" - AppDate    = " & AppDate, 2)
         xtrace(" - Date       = " & DateTime.Now.ToString("yyyy-MM-dd"), 2)
         xtrace(" - Time       = " & DateAndTime.TimeString, 2)
@@ -30,24 +30,64 @@
     End Sub
 
     '---- Xtrace --------------------------------------------------------------
-    Sub xtrace(Msg As String, TV As Integer)
-        If TV <= CTrace Then
-            Console.Write(Msg & vbNewLine)
+    Sub xtrace_root(Msg As String, TV As Integer)
+        xtrace_root(Msg, TV, "")
+    End Sub
+    Sub xtrace_root(Msg As String, TV As Integer, Extra As String)
+        Dim Nr As Int16
+        Dim Tab As String = ""
+
+        ' If subroutines are Not logged then tabbing is also disabeled
+        If LTrace >= G_TL_Sub Then
+            Tab = "|"
+            For Nr = 1 To SubLevel
+                Tab = Tab + "  |"
+            Next
         End If
 
-        If (TV <= LTrace) And LogFile <> "x" Then
-            My.Computer.FileSystem.WriteAllText(LogFile, Msg & vbNewLine, True)
+        If TV <= CTrace Then
+            Console.Write(Msg & vbCrLf)
         End If
+
+        If TV <= LTrace Then
+            My.Computer.FileSystem.WriteAllText(LogFile, Tab + Msg & vbCrLf, True)
+        End If
+
     End Sub
 
     Sub xtrace(Msg As String)
-        If (2 <= LTrace) Then
-            My.Computer.FileSystem.WriteAllText(LogFile, Msg & vbNewLine, True)
-        End If
+        xtrace_root(" " & Msg, 2)
     End Sub
 
-    '---- Write Error ---------------------------------------------------------
+    Sub xtrace(Msg As String, TV As Integer)
+        xtrace_root(" " & Msg, TV)
+    End Sub
 
+    '---- xtrace_i
+    Sub xtrace_i(Msg As String)
+        xtrace(" * " & Msg)
+    End Sub
+
+    Sub xtrace_i(Msg As String, TV As Integer)
+        xtrace(" * " & Msg, TV)
+    End Sub
+
+
+    '---- Write Error ---------------------------------------------------------
+    Sub xtrace_Err(Msg() As String)
+        Dim Line As String
+        Dim Nr As Integer = 0
+        xtrace("", 0)
+        For Each Line In Msg
+            Nr += 1
+            If Nr = 1 Then
+                xtrace("Error: " & Line, 0)
+            Else
+                xtrace("       " & Line, 0)
+            End If
+
+        Next
+    End Sub
     Sub WriteErr(Msg As String)
         xtrace("", 0)
         xtrace("Error: " & Msg, 0)

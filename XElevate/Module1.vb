@@ -1,4 +1,5 @@
-﻿Module Module1
+﻿' 2021-09-23 Quotes added to exe string
+Module Module1
 
     Sub Main()
         Dim ExeString As String = ""
@@ -17,7 +18,7 @@
         ' after reading the param so that BeBrief will work
 
         If (Not BeQuiet) Then
-            Console.Write(" " & AppName & " - " & AppVersion & vbNewLine)
+            Console.Write(" " & AppName & " - " & AppVer & vbNewLine)
         End If
 
         '---- Check if the executable exists ----------------------------------
@@ -44,7 +45,7 @@
 
             xtrace("Build ExeString", 2)
             ExeString = "CALL "
-            ExeString = ExeString & ToExecute & " " & TeEx_Arg
+            ExeString = ExeString & """" & ToExecute & """ " & TeEx_Arg     ' 2021-09-23
             ExeString = ExeString & " >>" & LogFile & " 2>>&1"
             WriteLanchFile(" ")
             WriteLanchFile(ExeString)

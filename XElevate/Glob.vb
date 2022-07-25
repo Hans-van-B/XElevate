@@ -3,8 +3,8 @@
     Public UTmp As String
 
     Public AppName As String = "XElevate"
-    Public AppVersion As String = "V0.08b"
-    Public AppDate As String = "2020-10-09"
+    Public AppVer As String = "V0.12"
+    Public AppDate As String = "2022-02-17"
 
     ' Logging
     Public LogFile As String
@@ -31,6 +31,8 @@
     Public WaitForLanchedProcess = False
     Public FixNetDrv As Boolean = False
     Public XElevateVar As String = "XElevate"
+    Public G_TL_Sub As Integer = 2  ' Trace Subroutines
+    Public SubLevel As Integer = 0
 
     Public ExecDir As String = "C:\Temp\TA\Elevate"
     Public Launchfile As String = ""

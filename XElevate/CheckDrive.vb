@@ -27,6 +27,8 @@
     End Sub
 
     '==== Check Net-Use =======================================================
+    Dim DriveTraceLevel As Integer = 3
+
     Sub CheckNetUse()
         xtrace(" - Get drive mapping", 2)
         Dim UNCPath As String = "-"
@@ -37,6 +39,15 @@
         Dim cnt As Integer
         Dim Index1 As Integer
         Dim Index2 As Integer
+        Dim Index3 As Integer
+
+        ' Debug drive detection
+        Dim FixDriveDebugFile = ExecDir & "\FixDriveDebug.txt"
+
+        If (System.IO.File.Exists(FixDriveDebugFile)) Then
+            xtrace(" - Found: " & FixDriveDebugFile)
+            DriveTraceLevel = 2
+        End If
 
         proc.CreateNoWindow = True
         proc.UseShellExecute = False
@@ -46,20 +57,25 @@
         pr = Process.Start(proc)
         pr.StandardInput.WriteLine("net use")
 
-        For cnt = 1 To 20
+        For cnt = 1 To 200
+            If pr.StandardOutput.EndOfStream Then Exit For
             line = pr.StandardOutput.ReadLine()
             Index1 = InStr(line, Drv2)
             Index2 = InStr(line, "\\")
-            xtrace(cnt.ToString & "|" & Index1.ToString & "|" & Index2.ToString & "|" & line, 3)
+            Index3 = InStr(line, "command completed successfully", CompareMethod.Text)
+            xtrace(cnt.ToString & "|" & Index1.ToString & "|" & Index2.ToString & "|" & line, DriveTraceLevel)
+
+            If Index3 > 0 Then Exit For
+
             If (Index1 > 1) And (Index2 > 1) Then
                 UNCPath = Mid(line, Index2)
                 xtrace(" - UNCPath = " & UNCPath, 2)
                 Exit For
             End If
 
-            If pr.StandardOutput.EndOfStream Then Exit For
         Next
         pr.StandardOutput.Close()
+        pr.Close()
 
         '---- Write Mount
         If UNCPath <> "-" Then
@@ -89,23 +105,29 @@
         proc.RedirectStandardInput = True
         proc.RedirectStandardOutput = True
 
-        pr = Process.Start(proc)
-        pr.StandardInput.WriteLine("subst")
+        Try
 
-        For cnt = 1 To 20
-            line = pr.StandardOutput.ReadLine()
-            Index1 = InStr(line, Drv2)
-            Index2 = InStr(line, "=> ")
-            xtrace(cnt.ToString & "|" & Index1.ToString & "|" & Index2.ToString & "|" & line, 3)
-            If (Index1 >= 1) And (Index2 > 1) Then
-                SPath = Mid(line, Index2 + 3)
-                xtrace(" - Path = " & SPath, 2)
-                Exit For
-            End If
+            pr = Process.Start(proc)
+            pr.StandardInput.WriteLine("subst")
+            xtrace_i("subst issued")
 
-            If pr.StandardOutput.EndOfStream Then Exit For
-        Next
-        pr.StandardOutput.Close()
+            For cnt = 1 To 20
+                If pr.StandardOutput.EndOfStream Then Exit For
+                line = pr.StandardOutput.ReadLine()
+                Index1 = InStr(line, Drv2)
+                Index2 = InStr(line, "=> ")
+                xtrace(cnt.ToString & "|" & Index1.ToString & "|" & Index2.ToString & "|" & line, DriveTraceLevel)
+                If (Index1 >= 1) And (Index2 > 1) Then
+                    SPath = Mid(line, Index2 + 3)
+                    xtrace(" - Path = " & SPath, 2)
+                    Exit For
+                End If
+            Next
+            pr.StandardOutput.Close()
+            pr.Close()
+        Catch ex As Exception
+            xtrace_Err({"Failed to execute subst", ex.Message})
+        End Try
 
         '---- Write Mount
         If SPath <> "-" Then

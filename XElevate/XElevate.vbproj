@@ -70,6 +70,7 @@
     <Compile Include="CreateLaunchfile.vb" />
     <Compile Include="Execute.vb" />
     <Compile Include="Glob.vb" />
+    <Compile Include="Help.vb" />
     <Compile Include="Log.vb" />
     <Compile Include="Module1.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />

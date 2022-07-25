@@ -11,7 +11,7 @@
         Dim SwitchRow As String
         Dim l As String
         Dim P1 As Integer
-        Dim SVal As String
+        Dim SVal As String = ""
 
         ' For each argument
         For Each Arg In My.Application.CommandLineArgs
@@ -24,7 +24,7 @@
                 xtrace(" - Sw : " & Sw, 2)
 
                 If (Sw = "h") Or (Sw = "?") Then
-                    ShowHelpV2()
+                    ShowHelp()
                     ExitProgram = True
                 End If
 
@@ -62,7 +62,12 @@
 
 
                 If Sw = "help" Then
-                    ShowHelpV2()
+                    ShowHelp()
+                    ExitProgram = True
+                End If
+
+                If Sw = "xhelp" Then
+                    ShowXHelp()
                     ExitProgram = True
                 End If
 
@@ -79,7 +84,7 @@
                     xtrace(" - Sw : " & Sw, 2)
 
                     If Sw = "h" Then
-                        ShowHelpV2()
+                        ShowHelp()
                         ExitProgram = True
                     End If
 
@@ -182,6 +187,13 @@
         Next
 
         xtrace(" ", 2)
+
+        '---- Override Defaults by environment variables
+        ' Sometimes, in rare cases, the subst command does not exit and causes xelevate to hang.
+        If Environment.GetEnvironmentVariable("TA_DISABLE_FMD") = "TRUE" Then
+            FixNetDrv = False
+            xtrace_i("TA_DISABLE_FMD = TRUE!")
+        End If
     End Sub
 
 
