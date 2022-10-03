@@ -1,10 +1,12 @@
-﻿Public Module Glob
+﻿' 2022-10-03 | 0.03 | HvB | Check Mount Drive fixed
+' 2022-10-03 | 0.04 | HvB | trace upgraded
+Public Module Glob
     Public StartupDir As String = My.Application.Info.DirectoryPath
     Public UTmp As String
 
     Public AppName As String = "XElevate"
-    Public AppVer As String = "V0.12"
-    Public AppDate As String = "2022-02-17"
+    Public AppVer As String = "V0.14"
+    Public AppDate As String = "2022-10-03"
 
     ' Logging
     Public LogFile As String

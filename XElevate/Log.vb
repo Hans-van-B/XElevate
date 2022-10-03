@@ -50,9 +50,18 @@
         End If
 
         If TV <= LTrace Then
-            My.Computer.FileSystem.WriteAllText(LogFile, Tab + Msg & vbCrLf, True)
-        End If
+            Try ' Catch log conflict
+                My.Computer.FileSystem.WriteAllText(LogFile, Tab + Msg & vbCrLf, True)
+            Catch ex1 As Exception
+                wait(1)
+                Try
+                    My.Computer.FileSystem.WriteAllText(LogFile, Tab + Msg & vbCrLf, True)
+                Catch ex2 As Exception
 
+                End Try
+            End Try
+
+        End If
     End Sub
 
     Sub xtrace(Msg As String)
@@ -63,7 +72,7 @@
         xtrace_root(" " & Msg, TV)
     End Sub
 
-    '---- xtrace_i
+    '---- xtrace_i ----
     Sub xtrace_i(Msg As String)
         xtrace(" * " & Msg)
     End Sub
@@ -72,6 +81,20 @@
         xtrace(" * " & Msg, TV)
     End Sub
 
+    '--- xtrace Sub ----
+    Sub xtrace_subs(Msg As String)
+        xtrace_root("->" & Msg & " (" & (SubLevel + 1).ToString & ")", G_TL_Sub)
+        SubLevel = SubLevel + 1
+    End Sub
+
+    Sub xtrace_sube(Msg As String)
+        SubLevel = SubLevel - 1
+        xtrace_root("<-" & Msg & " (" & (SubLevel + 1).ToString & ")", G_TL_Sub)
+    End Sub
+
+    Sub xtrace_sube()
+        xtrace_sube("<NoName>")
+    End Sub
 
     '---- Write Error ---------------------------------------------------------
     Sub xtrace_Err(Msg() As String)

@@ -5,7 +5,7 @@
     Sub LaunchfileInit()
 
         xtrace("", 2)
-        xtrace("LaunchfileInit", 2)
+        xtrace_subs("LaunchfileInit")
         xtrace(" - Exec Dir   = " & ExecDir, 2)
 
         '---- Check if the exe dir exists
@@ -22,11 +22,12 @@
             LaunchfileInitNotIndexed()
         End If
 
-
+        xtrace_sube("LaunchfileInit")
     End Sub
 
     Sub LaunchfileInitIndexed()
-        xtrace(" - Create indexed launch file", 2)
+        xtrace_subs("LaunchfileInitIndexed")
+
         '---- Create non-existing launch file
         ' This should support simultainious execution
         Dim NrTx As String = ""
@@ -72,6 +73,7 @@
             WriteLanchFile("@if not ""%DEBUG%""==""TRUE"" echo off")
         End If
         WriteLanchFile("@echo XElevated process")
+        If RedirectOutput Then WriteLanchFile(" echo CD = %CD%")
 
         '---- Move the log file
         xtrace(" - Move the log file", 2)
@@ -109,10 +111,12 @@
             xtrace(" - Delete " & Nextf, 2)
             My.Computer.FileSystem.DeleteFile(Nextf)
         End If
+
+        xtrace_sube("LaunchfileInitIndexed")
     End Sub
 
     Sub LaunchfileInitNotIndexed()
-        xtrace(" - Create non-indexed launch file", 2)
+        xtrace_subs("LaunchfileInitNotIndexed")
 
         Dim Logfile_2 As String
 
@@ -136,6 +140,7 @@
             WriteLanchFile("@if not ""%DEBUG%""==""TRUE"" echo off")
         End If
         WriteLanchFile("@echo XElevated process")
+        If RedirectOutput Then WriteLanchFile(" echo CD = %CD%")
 
         '---- Move the log file
         xtrace(" - Move the log file", 2)
@@ -148,7 +153,9 @@
         LogFile = Logfile_2
         xtrace(" - Log file moved", 2)
         ' No dash because it is also written to the console
-        xtrace(" Logging to " & LogFile, tl)
+        xtrace("Logging to " & LogFile, tl)
+
+        xtrace_sube("LaunchfileInitNotIndexed")
     End Sub
 
     Sub WriteLanchFile(Line As String)

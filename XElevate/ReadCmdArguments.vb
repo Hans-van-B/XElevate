@@ -1,17 +1,19 @@
 ﻿Module ReadCmdArguments
-
+    Public Debug_Exe As Boolean = False
 
     '---- Read Command line arguments V2 ----
     ' Matches Help V2
 
     Sub ReadArgV2()
-        xtrace("Read Command-line parameters V2", 2)
+        xtrace_subs("Read Command-line parameters V2")
 
         Dim Sw As String
         Dim SwitchRow As String
         Dim l As String
         Dim P1 As Integer
         Dim SVal As String = ""
+        Dim Name As String
+        Dim ValS As String
 
         ' For each argument
         For Each Arg In My.Application.CommandLineArgs
@@ -32,10 +34,26 @@
             End If
 
             ' Check for double-dash arguments
-            l = Left(Arg, 2)
-            If l = "--" Then
+            If Left(Arg, 2) = "--" Then
                 Sw = Mid(Arg, 3)
-                xtrace(" - Sw : " & Sw, 2)
+                xtrace_i("DDA:" & Sw)
+
+                '---- Double-dash Assignment
+                P1 = InStr(Sw, "=")
+                If P1 > 0 Then
+                    Name = Left(Sw, P1 - 1)
+                    ValS = Mid(Sw, P1 + 1)
+                    xtrace_i("Name = " & Name)
+                    xtrace_i("Val  = " & ValS)
+
+                    ' Also see the implicit read at the end
+                    If Name = "ep" Then
+                        TeEx_Arg = ValS
+                        xtrace_i("Set ExeParam = " & TeEx_Arg)
+                    End If
+
+                    Continue For
+                End If
 
                 ' Check for assignment
                 P1 = InStr(Sw, "=")
@@ -48,6 +66,11 @@
                 If Sw = "cv" Then
                     xtrace(" Console verbose", 0)
                     CTrace = CTrace + 1
+                End If
+
+                If Sw = "de" Then
+                    xtrace(" Debug Exe = True (Exe output goes to the log file)", 2)
+                    Debug_Exe = True
                 End If
 
                 If Sw = "fmd" Then
@@ -194,6 +217,8 @@
             FixNetDrv = False
             xtrace_i("TA_DISABLE_FMD = TRUE!")
         End If
+
+        xtrace_sube("Read Command-line parameters V2")
     End Sub
 
 
